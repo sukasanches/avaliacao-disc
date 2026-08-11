@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Avaliação DISC | Perfil comportamental</title>
+  <style>
+    :root {
+      --ink: #253333;
+      --muted: #667575;
+      --line: #dce5e1;
+      --paper: #ffffff;
+      --canvas: #f5f7f5;
+      --sage: #55766a;
+      --sage-dark: #385548;
+      --sage-soft: #e8f0ea;
+      --focus: #b67c45;
+      --danger: #a64949;
+      --shadow: 0 12px 28px rgba(39, 62, 53, .08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--canvas);
+      line-height: 1.5;
+    }
+
+    .shell { width: min(960px, calc(100% - 32px)); margin: 0 auto; }
+    .hero { padding: 58px 0 38px; }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 8px; margin: 0 0 14px;
+      color: var(--sage-dark); font-size: .77rem; font-weight: 750; letter-spacing: .12em; text-transform: uppercase;
+    }
+    .eyebrow::before { content: ""; width: 20px; height: 1px; background: currentColor; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { max-width: 750px; margin-bottom: 12px; font-size: clamp(2.1rem, 5vw, 3.6rem); line-height: 1.08; letter-spacing: -.045em; font-weight: 650; }
+    .intro { max-width: 710px; color: var(--muted); font-size: 1.05rem; }
+    .notice { display: flex; gap: 12px; align-items: flex-start; padding: 17px 18px; margin-top: 28px; border-left: 3px solid var(--sage); background: var(--sage-soft); color: #3a5147; font-size: .92rem; }
+    .notice svg { flex: 0 0 auto; margin-top: 2px; }
+
+    main { padding-bottom: 58px; }
+    .card { background: var(--paper); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); }
+    .form-head { padding: 25px 28px 21px; border-bottom: 1px solid var(--line); }
+    .form-head h2 { margin-bottom: 5px; font-size: 1.27rem; letter-spacing: -.02em; }
+    .form-head p { margin-bottom: 0; color: var(--muted); font-size: .92rem; }
+    .tracker { display: flex; gap: 12px; align-items: center; margin-top: 20px; }
+    .track { height: 7px; flex: 1; overflow: hidden; border-radius: 999px; background: #edf1ef; }
+    .track > span { display: block; height: 100%; width: 0; border-radius: inherit; background: var(--sage); transition: width .2s ease; }
+    #progressText { color: var(--muted); font-size: .82rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    form { padding: 8px 28px 28px; }
+    fieldset { min-inline-size: 0; margin: 0; padding: 26px 0; border: 0; border-bottom: 1px solid var(--line); }
+    fieldset:last-of-type { border-bottom: 0; }
+    legend { padding: 0; font-size: 1.02rem; font-weight: 680; line-height: 1.36; }
+    .question-number { color: var(--sage); font-size: .78rem; font-weight: 750; letter-spacing: .08em; }
+    .answers { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 15px; }
+    .answer { position: relative; display: block; cursor: pointer; }
+    .answer input { position: absolute; opacity: 0; pointer-events: none; }
+    .answer span {
+      display: block; min-height: 58px; padding: 13px 16px 13px 42px; border: 1px solid var(--line); border-radius: 10px; background: #fff;
+      color: #40504d; font-size: .91rem; transition: border-color .15s ease, background .15s ease, box-shadow .15s ease;
+    }
+    .answer span::before { content: ""; position: absolute; left: 15px; top: 17px; width: 14px; height: 14px; border: 1.5px solid #aab8b2; border-radius: 50%; }
+    .answer input:checked + span { border-color: var(--sage); background: var(--sage-soft); color: #294337; }
+    .answer input:checked + span::before { border: 4.5px solid var(--sage); }
+    .answer input:focus-visible + span { outline: 3px solid rgba(182,124,69,.35); outline-offset: 2px; }
+    .answer:hover span { border-color: #a8bbb1; }
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 22px; }
+    button { appearance: none; border: 0; border-radius: 9px; padding: 12px 18px; cursor: pointer; font: inherit; font-size: .93rem; font-weight: 700; transition: transform .12s ease, background .12s ease; }
+    button:hover { transform: translateY(-1px); }
+    button:focus-visible { outline: 3px solid rgba(182,124,69,.4); outline-offset: 2px; }
+    .primary { background: var(--sage-dark); color: white; }
+    .primary:hover { background: #294237; }
+    .secondary { margin-left: auto; background: transparent; color: var(--muted); }
+    .secondary:hover { background: #f1f4f2; color: var(--ink); }
+    .validation { min-height: 23px; margin: 14px 0 0; color: var(--danger); font-size: .9rem; font-weight: 600; }
+
+    .result { display: none; margin-top: 28px; overflow: hidden; }
+    .result.visible { display: block; }
+    .result-top { padding: 30px 28px; background: #f0f5f1; border-bottom: 1px solid var(--line); }
+    .result-top h2 { margin: 3px 0 7px; font-size: clamp(1.6rem, 3vw, 2rem); letter-spacing: -.035em; }
+    .result-summary { max-width: 670px; margin-bottom: 0; color: #4a5e55; }
+    .result-body { padding: 28px; }
+    .result-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 25px; align-items: start; }
+    .scores { display: grid; gap: 13px; }
+    .score-row { display: grid; grid-template-columns: 28px 1fr 45px; gap: 10px; align-items: center; }
+    .score-label { font-weight: 780; color: var(--sage-dark); }
+    .bar { height: 9px; overflow: hidden; background: #e8eeea; border-radius: 100px; }
+    .bar i { display: block; height: 100%; width: 0; border-radius: inherit; background: var(--sage); transition: width .65s cubic-bezier(.2,.8,.2,1); }
+    .score-value { color: var(--muted); text-align: right; font-size: .88rem; font-variant-numeric: tabular-nums; }
+    .profile-note { padding: 20px; border: 1px solid var(--line); border-radius: 12px; }
+    .profile-note h3 { margin-bottom: 8px; color: var(--sage-dark); font-size: 1.08rem; }
+    .profile-note p { margin-bottom: 0; color: #566561; font-size: .93rem; }
+    .trait-details { margin: 29px 0 0; padding-top: 25px; border-top: 1px solid var(--line); }
+    .trait-details h3 { margin-bottom: 16px; font-size: 1.06rem; }
+    .detail-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .detail { padding: 16px; border: 1px solid var(--line); border-radius: 11px; }
+    .detail h4 { margin: 0 0 7px; color: var(--sage-dark); font-size: .96rem; }
+    .detail p { margin: 0; color: var(--muted); font-size: .88rem; }
+    .result-actions { display: flex; gap: 12px; margin-top: 26px; }
+    .print-button { background: var(--sage-dark); color: white; }
+    footer { padding: 0 0 34px; color: #77847f; font-size: .78rem; text-align: center; }
+
+    @media (max-width: 650px) {
+      .hero { padding-top: 38px; }
+      .form-head, form, .result-top, .result-body { padding-left: 18px; padding-right: 18px; }
+      .answers, .result-grid, .detail-list { grid-template-columns: 1fr; }
+      .secondary { margin-left: 0; }
+    }
+    @media print {
+      @page { margin: 15mm; }
+      body { background: white; font-size: 11pt; }
+      .hero { padding: 0 0 10px; }
+      .shell { width: 100%; }
+      .notice, #testCard, footer, .result-actions { display: none !important; }
+      #result { display: block !important; margin: 0; box-shadow: none; border: 0; }
+      .result-top { padding: 0 0 16px; background: none; }
+      .result-body { padding: 20px 0 0; }
+      .result-grid { grid-template-columns: 1fr 1fr; }
+      .detail { break-inside: avoid; }
+      h1 { font-size: 27pt; }
+    }
+  </style>
+</head>
+<body>
+  <header class="shell hero">
+    <p class="eyebrow">Autopercepção comportamental</p>
+    <h1>Avaliação de perfil DISC</h1>
+    <p class="intro">Identifique tendências de comportamento nas dimensões Dominância, Influência, Estabilidade e Conformidade.</p>
+    <div class="notice" role="note">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 10v5M12 7h.01"/></svg>
+      <span>Este questionário tem caráter de autoconhecimento e não substitui avaliação ou diagnóstico realizado por profissional habilitado. Responda pensando em como você costuma agir na maior parte do tempo.</span>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="card" id="testCard" aria-labelledby="formTitle">
+      <div class="form-head">
+        <h2 id="formTitle">Escolha a alternativa mais parecida com você</h2>
+        <p>Não há respostas certas ou erradas. Selecione apenas uma opção por situação.</p>
+        <div class="tracker" aria-live="polite">
+          <div class="track" aria-hidden="true"><span id="progressBar"></span></div>
+          <span id="progressText">0 de 20 respondidas</span>
+        </div>
+      </div>
+      <form id="discForm" novalidate></form>
+    </section>
+
+    <section class="card result" id="result" aria-live="polite" aria-labelledby="resultTitle">
+      <div class="result-top">
+        <p class="eyebrow">Seu resultado</p>
+        <h2 id="resultTitle">Seu perfil predominante é <span id="primaryTrait">—</span></h2>
+        <p class="result-summary" id="resultSummary"></p>
+      </div>
+      <div class="result-body">
+        <div class="result-grid">
+          <div>
+            <h3>Distribuição das dimensões</h3>
+            <div class="scores" id="scores" aria-label="Pontuações por dimensão"></div>
+          </div>
+          <aside class="profile-note">
+            <h3 id="profileTitle">Leitura do perfil</h3>
+            <p id="profileText"></p>
+          </aside>
+        </div>
+        <div class="trait-details">
+          <h3>Como interpretar as dimensões</h3>
+          <div class="detail-list" id="traitDetails"></div>
+        </div>
+        <div class="result-actions">
+          <button type="button" class="print-button" id="printButton">Imprimir resultado</button>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="shell">Avaliação DISC · Resultado indicativo baseado nas respostas registradas nesta sessão.</footer>
+
+  <script>
+    const traits = {
+      D: { name: 'Dominância (D)', short: 'Dominância', description: 'Tende a ser direto, decidido e orientado a desafios, autonomia e resultados.', profile: 'Você pode se sentir energizado por metas ambiciosas, decisões rápidas e pela possibilidade de influenciar o rumo das situações.' },
+      I: { name: 'Influência (I)', short: 'Influência', description: 'Tende a ser comunicativo, persuasivo e voltado a relações, entusiasmo e reconhecimento.', profile: 'Você pode se sentir energizado por trocas sociais, oportunidades de inspirar pessoas e ambientes abertos a ideias.' },
+      S: { name: 'Estabilidade (S)', short: 'Estabilidade', description: 'Tende a ser paciente, cooperativo e orientado a harmonia, apoio e previsibilidade.', profile: 'Você pode se sentir energizado por relações de confiança, colaboração consistente e um ritmo mais estável.' },
+      C: { name: 'Conformidade (C)', short: 'Conformidade', description: 'Tende a ser analítico, cuidadoso e orientado a qualidade, precisão e critérios claros.', profile: 'Você pode se sentir energizado por problemas complexos, padrões bem definidos e entregas de alta qualidade.' }
+    };
+
+    const questions = [
+      ['Ao iniciar um projeto novo, eu geralmente...', ['assumo a frente para definir o caminho.', 'converso com as pessoas e gero entusiasmo.', 'procuro entender como posso apoiar o grupo.', 'reúno informações antes de decidir.']],
+      ['Quando há pressão por prazo, eu costumo...', ['tomar decisões objetivas e acelerar a execução.', 'motivar quem está ao redor para seguir em frente.', 'manter a calma e ajudar a equipe a se organizar.', 'revisar os detalhes para reduzir riscos.']],
+      ['Em uma reunião, é mais natural para mim...', ['defender minha posição com clareza.', 'compartilhar ideias e estimular a conversa.', 'ouvir os pontos de vista antes de falar.', 'fazer perguntas para esclarecer os fatos.']],
+      ['Eu me sinto mais satisfeito quando...', ['alcanço uma meta desafiadora.', 'crio conexões e vejo pessoas engajadas.', 'contribuo para um ambiente tranquilo e cooperativo.', 'entrego algo bem feito e tecnicamente correto.']],
+      ['Diante de uma mudança inesperada, eu...', ['busco rapidamente uma solução prática.', 'encaro como uma oportunidade de novidade.', 'preciso de algum tempo para me adaptar.', 'quero compreender o impacto antes de agir.']],
+      ['Pessoas próximas costumam perceber que eu...', ['vou direto ao ponto.', 'sou expressivo e sociável.', 'sou confiável e paciente.', 'sou criterioso e observador.']],
+      ['Ao lidar com um conflito, minha primeira tendência é...', ['enfrentar o assunto para resolver logo.', 'conversar de modo leve para aproximar as partes.', 'preservar a relação e buscar um acordo.', 'analisar as causas antes de propor uma saída.']],
+      ['Quando recebo uma tarefa, prefiro...', ['ter liberdade para decidir como fazê-la.', 'poder trocar ideias enquanto a desenvolvo.', 'receber orientações e um ritmo previsível.', 'ter critérios, dados e instruções bem definidos.']],
+      ['No trabalho em equipe, normalmente eu...', ['impulsiono o grupo para a ação.', 'estimulo a participação de todos.', 'mantenho a cooperação e dou suporte.', 'acompanho qualidade, processo e consistência.']],
+      ['Uma situação que mais me desgasta é...', ['a demora para tomar decisões.', 'um ambiente frio e sem interação.', 'conflitos frequentes ou mudanças bruscas.', 'a falta de organização ou de critérios.']],
+      ['Em relação a riscos, eu tendo a...', ['aceitá-los se aproximarem o resultado.', 'ver neles uma experiência estimulante.', 'preferir o que já é conhecido e seguro.', 'avaliá-los com cuidado antes de avançar.']],
+      ['Ao explicar uma ideia, eu geralmente...', ['foco no objetivo e nos próximos passos.', 'uso histórias e entusiasmo para envolver.', 'adapto o ritmo para que todos acompanhem.', 'apresento dados e argumentos estruturados.']],
+      ['Quando preciso aprender algo novo, eu...', ['começo logo e ajusto no caminho.', 'aprendo melhor trocando com outras pessoas.', 'prefiro apoio e tempo para ganhar confiança.', 'estudo primeiro para entender com profundidade.']],
+      ['Minha forma preferida de receber feedback é...', ['clara, direta e focada em melhoria.', 'encorajadora e em diálogo aberto.', 'respeitosa e dada em um ambiente seguro.', 'específica, com exemplos e critérios.']],
+      ['Em tarefas repetitivas, eu...', ['procuro maneiras de tornar o processo mais ágil.', 'busco variar e tornar a experiência mais agradável.', 'mantenho a constância até a conclusão.', 'sigo o padrão para garantir a precisão.']],
+      ['Em geral, tomo decisões...', ['com rapidez, pensando na meta.', 'considerando como elas afetam as pessoas.', 'com calma, buscando consenso.', 'depois de comparar as evidências.']],
+      ['Quando uma regra dificulta o trabalho, eu...', ['questiono e busco uma alternativa imediata.', 'converso para mobilizar apoio a uma mudança.', 'procuro me adaptar sem desestabilizar o grupo.', 'verifico a razão e as implicações da regra.']],
+      ['O ambiente em que rendo melhor tem...', ['autonomia e objetivos exigentes.', 'interação, movimento e contato humano.', 'estabilidade, respeito e colaboração.', 'organização, silêncio e foco em qualidade.']],
+      ['Ao receber um resultado abaixo do esperado, eu...', ['redobro a energia para superar a meta.', 'procuro conversar e recuperar o entusiasmo.', 'busco apoio e mantenho a persistência.', 'reviso o que ocorreu para corrigir o processo.']],
+      ['Uma contribuição que valorizo oferecer é...', ['coragem para avançar.', 'energia para conectar e inspirar.', 'lealdade para sustentar o time.', 'rigor para elevar a qualidade.']]
+    ];
+    const order = ['D', 'I', 'S', 'C'];
+    const form = document.getElementById('discForm');
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+
+    function buildForm() {
+      questions.forEach(([question, choices], index) => {
+        const fieldset = document.createElement('fieldset');
+        const options = choices.map((choice, answerIndex) => {
+          const id = `q${index}-${answerIndex}`;
+          return `<label class="answer"><input type="radio" name="q${index}" value="${order[answerIndex]}" id="${id}"><span>${choice}</span></label>`;
+        }).join('');
+        fieldset.innerHTML = `<legend><span class="question-number">QUESTÃO ${String(index + 1).padStart(2, '0')}</span><br>${question}</legend><div class="answers">${options}</div>`;
+        form.appendChild(fieldset);
+      });
+      form.insertAdjacentHTML('beforeend', `
+        <p class="validation" id="validation" role="alert"></p>
+        <div class="actions">
+          <button class="primary" type="submit">Ver meu resultado</button>
+          <button class="secondary" type="button" id="resetButton">Limpar respostas</button>
+        </div>`);
+    }
+
+    function updateProgress() {
+      const count = new FormData(form).getAll ? [...new FormData(form).keys()].filter((value, index, array) => array.indexOf(value) === index && value.startsWith('q')).length : 0;
+      const percentage = (count / questions.length) * 100;
+      progressBar.style.width = `${percentage}%`;
+      progressText.textContent = `${count} de ${questions.length} respondidas`;
+    }
+
+    function renderResult(scores) {
+      const max = Math.max(...order.map(key => scores[key]));
+      const primary = order.filter(key => scores[key] === max);
+      const primaryNames = primary.map(key => traits[key].short).join(' e ');
+      document.getElementById('primaryTrait').textContent = primaryNames;
+      document.getElementById('resultSummary').textContent = primary.length === 1
+        ? `Sua maior pontuação foi em ${traits[primary[0]].name}. Os percentuais mostram tendências relativas observadas nas suas respostas.`
+        : `Houve um equilíbrio entre ${primaryNames}. Os percentuais mostram tendências relativas observadas nas suas respostas.`;
+      document.getElementById('profileTitle').textContent = primary.length === 1 ? `Perfil: ${traits[primary[0]].name}` : 'Perfil com traços combinados';
+      document.getElementById('profileText').textContent = primary.length === 1
+        ? traits[primary[0]].profile
+        : `Suas respostas apontam para uma combinação de características. Observe as dimensões em conjunto e considere o contexto em que cada tendência aparece.`;
+
+      document.getElementById('scores').innerHTML = order.map(key => {
+        const percent = Math.round((scores[key] / questions.length) * 100);
+        return `<div class="score-row"><span class="score-label">${key}</span><div class="bar"><i style="width:${percent}%"></i></div><span class="score-value">${percent}%</span></div>`;
+      }).join('');
+      document.getElementById('traitDetails').innerHTML = order.map(key => `<article class="detail"><h4>${traits[key].name}</h4><p>${traits[key].description}</p></article>`).join('');
+      const result = document.getElementById('result');
+      result.classList.add('visible');
+      setTimeout(() => result.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
+    }
+
+    buildForm();
+    form.addEventListener('change', updateProgress);
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      const data = new FormData(form);
+      const unanswered = questions.map((_, i) => `q${i}`).filter(name => !data.has(name));
+      const validation = document.getElementById('validation');
+      if (unanswered.length) {
+        validation.textContent = `Faltam ${unanswered.length} questão(ões) para concluir a avaliação.`;
+        document.querySelector(`[name="${unanswered[0]}"]`).closest('fieldset').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+      validation.textContent = '';
+      const scores = { D: 0, I: 0, S: 0, C: 0 };
+      for (const value of data.values()) scores[value] += 1;
+      renderResult(scores);
+    });
+    document.getElementById('resetButton').addEventListener('click', () => {
+      form.reset();
+      document.getElementById('validation').textContent = '';
+      document.getElementById('result').classList.remove('visible');
+      updateProgress();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    document.getElementById('printButton').addEventListener('click', () => window.print());
+  </script>
+</body>
+</html>
